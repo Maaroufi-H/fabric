@@ -1,0 +1,23 @@
+QUERY UTILI:
+le produit le plus vendu pour chaque date. (PRODOTTO PIU VENDUTO PER OGNI DATA)
+
+JE VEUX ,POUR CHAQUE JOUR ,AVOIR LE PRODUIT QUI S'EST VENDU LE PLUS.
+LA LOGIQUE INITIALE EST DE GROUPER LES VENTES PAR DATE ET PAR DATE.DONC TOUTES LES VENTES AVEC MEME DATE ET PRODUIT SERONT GROUPES FIN D Y EFFECTUER DES FONCTIONS D AGGREGATION
+
+WITH produits_vendus_par_jour as (
+       select ventes_id,
+	   produit_id,
+	   date_facturation,
+	   SUM(ventes_euro) as moyenne_ventes,
+	   ROW_NUMBER over (partition by DATA_FACTURATION ORDER BY (moyenne_ventes) desc ) AS RANG 
+       grouby(produit_id,date_facturation)   
+	   order by ventes_euro desc
+       
+ )
+    select ventes_id,
+    produit_id,
+    date_facturation,
+    moyenne_ventes
+	FROM 
+    produits_vendus_par_jour
+	where RANG=1;
